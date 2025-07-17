@@ -26,9 +26,24 @@ stages {
     }
 
   stages {
+    stage('Prepare Backend') {
+      steps {
+        script {
+          def backendFile = "backend-${env.BRANCH_NAME}.tf"
+          if (!fileExists(backendFile)) {
+            error "Missing backend file: ${backendFile}"
+          }
+          // Delete any existing backend.tf and copy the branch-specific backend file
+          bat 'if exist backend.tf del backend.tf'
+          bat "copy ${backendFile} backend.tf"
+        }
+      }
+    }
+
     stage('Terraform Init') {
       steps {
-        bat 'terraform init'
+        // Reinitialize terraform with the new backend.tf file
+        bat 'terraform init -reconfigure'
       }
     }
 
@@ -68,5 +83,5 @@ stages {
         }
       }
     }
-  }
-}
+  } // 👈 this was missing
+}     // 👈 this closes the `pipeline {}` block
