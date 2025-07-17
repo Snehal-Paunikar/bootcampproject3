@@ -52,5 +52,5 @@ pipeline {
         }
       }
     }
-  }
-}
+  } // 👈 this was missing
+}     // 👈 this closes the `pipeline {}` block
