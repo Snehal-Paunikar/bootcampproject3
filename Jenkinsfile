@@ -9,6 +9,22 @@ pipeline {
     ARM_TENANT_ID       = credentials('terraform-tenant-id')  // ✅ FIXED typo
   }
 
+stages {
+
+    stage('Select Backend File') {
+      steps {
+        script {
+          if (env.BRANCH_NAME == 'staging') {
+            bat 'copy backend-staging.tf backend.tf'
+          } else if (env.BRANCH_NAME == 'production') {
+            bat 'copy backend-production.tf backend.tf'
+          } else {
+            error("Unsupported branch: ${env.BRANCH_NAME}")
+          }
+        }
+      }
+    }
+
   stages {
     stage('Terraform Init') {
       steps {
